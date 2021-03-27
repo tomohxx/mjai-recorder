@@ -1,0 +1,31 @@
+version: '3.7'
+services:
+  db:
+    image: postgres
+    ports:
+      - 5432:5432
+    environment:
+      - POSTGRES_USER=user
+      - POSTGRES_PASSWORD=password
+      - POSTGRES_DB=mjai_db
+    volumes:
+      - ./db/sql:/docker-entrypoint-initdb.d
+      - ./db/data:/var/lib/postgresql/data
+  mjai:
+    build:
+      context: ./mjai
+    ports:
+      - 11600:11600
+    depends_on:
+      - db
+    volumes:
+      - ./storage:/log_dir
+  log:
+    image: nginx
+    ports:
+      - 8000:80
+    volumes:
+      - ./storage:/usr/share/nginx/html:ro
+      - ./log/conf.d:/etc/nginx/conf.d
+    depends_on:
+      - db
