@@ -9,6 +9,11 @@ Mjaiイベントログ管理ツール
 ## ER図
 ![ER図](relationships.real.large.png)
 
+### 出力コマンド
+```shell
+$ sudo docker run -v "$PWD/output:/output" -v "$PWD/schemaspy.properties:/schemaspy.properties" --net=host --rm schemaspy/schemaspy
+```
+
 ## SQLコマンド例
 
 - *Player*の試合数
@@ -39,6 +44,16 @@ select count(*) from winnings inner join players on winnings.target = players.id
 - *Player*の放銃率
 ```sql
 select round(count(*)::numeric/(select count(*) from rounds inner join players on rounds.game_id = players.game_id where players.name = 'Player'), 2) as ratio from winnings inner join players on winnings.target = players.id where winnings.actor != players.id and players.name = 'Player';
+```
+
+- *Player*の立直回数
+```sql
+select count(*) from riichis inner join players on riichis.player_id = players.id where players.name = 'Player';
+```
+
+- *Player*の立直率
+```sql
+select round(count(*)::numeric/(select count(*) from rounds inner join players on rounds.game_id = players.game_id where players.name = 'Player'), 2) from riichis inner join players on riichis.player_id = players.id where players.name = 'Player';
 ```
 
 - *Player*の最新10試合の順位

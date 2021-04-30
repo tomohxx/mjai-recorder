@@ -30,6 +30,14 @@ class Analyzer
     @round_id = result[0]["lastval"]
   end
 
+  def insert_riichi(actor)
+    @connection.exec("INSERT INTO riichis VALUES (default,#{@player_id[actor]},#{@round_id})")
+  end
+
+  def insert_naki(actor, target)
+    @connection.exec("INSERT INTO nakis VALUES (default,#{@player_id[actor]},#{@player_id[target]},#{@round_id})")
+  end
+
   def insert_winning(actor, target, delta)
     @connection.exec("INSERT INTO winnings VALUES (default,#{@player_id[actor]},#{@player_id[target]},#{delta},#{@round_id})")
   end
@@ -48,6 +56,22 @@ class Analyzer
 
   def start_kyoku(message)
     insert_round()
+  end
+
+  def reach(message)
+    insert_riichi(message["actor"])
+  end
+
+  def pon(message)
+    insert_naki(message["actor"], message["target"])
+  end
+
+  def chi(message)
+    insert_naki(message["actor"], message["target"])
+  end
+
+  def daiminkan(message)
+    insert_naki(message["actor"], message["target"])
   end
 
   def hora(message)
