@@ -36,6 +36,16 @@ select count(*) from winnings inner join players on winnings.actor = players.id 
 select round(count(*)::numeric/(select count(*) from rounds inner join players on rounds.game_id = players.game_id where players.name = 'Player'), 2) as ratio from winnings inner join players on winnings.actor = players.id where players.name = 'Player';
 ```
 
+- *Player*の平均得点
+```sql
+select round(avg(winnings.delta), 2) from winnings inner join players on winnings.actor = players.id where players.name = 'Player';
+```
+
+- *Player*の平均失点
+```sql
+select round(avg(winnings.delta), 2) from winnings inner join players on winnings.actor != players.id and winnings.target = players.id where players.name = 'Player';
+```
+
 - *Player*の放銃回数
 ```sql
 select count(*) from winnings inner join players on winnings.target = players.id where winnings.actor != players.id and players.name = 'Player';
@@ -54,6 +64,11 @@ select count(*) from riichis inner join players on riichis.player_id = players.i
 - *Player*の立直率
 ```sql
 select round(count(*)::numeric/(select count(*) from rounds inner join players on rounds.game_id = players.game_id where players.name = 'Player'), 2) from riichis inner join players on riichis.player_id = players.id where players.name = 'Player';
+```
+
+- *Player*の副露率
+```sql
+select round(count(*)::numeric/(select count(*) from rounds inner join players on rounds.game_id = players.game_id where players.name = 'Player'), 2) from (select distinct nakis.actor, nakis.round_id from nakis inner join players on nakis.actor = players.id where players.name = 'Player') as foo;
 ```
 
 - *Player*の最新10試合の順位
