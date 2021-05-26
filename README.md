@@ -36,6 +36,11 @@ select count(*) from winnings inner join players on winnings.actor = players.id 
 select round(count(*)::numeric/(select count(*) from rounds inner join players on rounds.game_id = players.game_id where players.name = 'Player'), 2) as ratio from winnings inner join players on winnings.actor = players.id where players.name = 'Player';
 ```
 
+- *Player*が和了した牌譜
+```sql
+select games.file_name from winnings inner join players on winnings.actor = players.id inner join games on players.game_id = games.id where players.name = 'Player';
+```
+
 - *Player*の平均得点
 ```sql
 select round(avg(winnings.delta), 2) from winnings inner join players on winnings.actor = players.id where players.name = 'Player';
@@ -54,6 +59,11 @@ select count(*) from winnings inner join players on winnings.target = players.id
 - *Player*の放銃率
 ```sql
 select round(count(*)::numeric/(select count(*) from rounds inner join players on rounds.game_id = players.game_id where players.name = 'Player'), 2) as ratio from winnings inner join players on winnings.target = players.id where winnings.actor != players.id and players.name = 'Player';
+```
+
+- *Player*が放銃した牌譜
+```sql
+select games.file_name from winnings inner join players on winnings.target = players.id inner join games on players.game_id = games.id where winnings.actor != players.id and players.name = 'Player';
 ```
 
 - *Player*の立直回数
