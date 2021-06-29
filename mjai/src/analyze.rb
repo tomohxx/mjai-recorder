@@ -42,6 +42,10 @@ class Analyzer
     @connection.exec("INSERT INTO winnings VALUES (default,#{@player_id[actor]},#{@player_id[target]},#{delta},#{@round_id})")
   end
 
+  def insert_ryukyoku(actor, tenpai)
+    @connection.exec("INSERT INTO ryukyokus VALUES (default,#{@player_id[actor]},#{tenpai},#{@round_id})")
+  end
+
   def insert_result(seat, score, position)
     @connection.exec("INSERT INTO results VALUES (#{@player_id[seat]},#{@game_id},#{score},#{position})")
   end
@@ -76,6 +80,12 @@ class Analyzer
 
   def hora(message)
     insert_winning(message["actor"], message["target"], message['deltas'][message['actor']])
+  end
+
+  def ryukyoku(message)
+    4.times do |i|
+      insert_ryukyoku(i, message["tenpais"][i])
+    end
   end
 
   def end_game(message)

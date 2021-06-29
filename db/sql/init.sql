@@ -28,6 +28,15 @@ CREATE TABLE winnings (
   FOREIGN KEY (round_id) REFERENCES rounds (id)
 );
 
+CREATE TABLE ryukyokus (
+  id SERIAL NOT NULL PRIMARY KEY,
+  player_id INTEGER NOT NULL,
+  tenpai BOOLEAN NOT NULL,
+  round_id INTEGER NOT NULL,
+  FOREIGN KEY (player_id) REFERENCES players (id),
+  FOREIGN KEY (round_id) REFERENCES rounds (id)
+);
+
 CREATE TABLE results (
   player_id INTEGER NOT NULL PRIMARY KEY,
   game_id INTEGER NOT NULL,

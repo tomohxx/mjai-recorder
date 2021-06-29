@@ -2,9 +2,9 @@
 Mjaiイベントログ管理ツール
 
 ## 機能
-- ポート番号11600でMjaiサーバー機能を提供する.
-- ポート番号5432でDBサーバー機能を提供する.
-- ポート番号8000でログ閲覧機能を提供する.
+- Mjaiサーバー(ポート番号: 11600)
+- DBサーバー(ポート番号: 5432)
+- ログ閲覧(ポート番号: 8000)
 
 ## ER図
 ![ER図](relationships.real.large.png)
@@ -14,7 +14,21 @@ Mjaiイベントログ管理ツール
 $ sudo docker run -v "$PWD/output:/output" -v "$PWD/schemaspy.properties:/schemaspy.properties" --net=host --rm schemaspy/schemaspy
 ```
 
-## SQLコマンド例
+## 解析
+
+*Player*の成績
+```
+$ ./analyze.sh Player
+```
+
+## SQLコマンド実行
+
+```
+$ docker exec -it mjai-recoder_db_1 psql mjai_db -U user
+```
+
+<details>
+<summary>SQLコマンド例</summary>
 
 - *Player*の試合数
 ```sql
@@ -95,3 +109,5 @@ select ranking.position, count(ranking.position) from (select results.position f
 ```sql
 select round(avg(results.position), 2) from results inner join players on results.player_id = players.id where players.name = 'Player';
 ```
+
+</details>
