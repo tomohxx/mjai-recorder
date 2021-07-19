@@ -19,3 +19,4 @@ select ranking.position as 順位, count(ranking.position) as 回数 from (selec
 select round(avg(results.position), 3) as 平均順位 from results inner join players on results.player_id = players.id where players.name = :'NAME';
 select round(count(*)::numeric/:局数, 3) as 流局率 from ryukyokus inner join players on ryukyokus.player_id = players.id where players.name = :'NAME';
 select round(count(*)::numeric/(select count(*) from ryukyokus inner join players on ryukyokus.player_id = players.id where players.name = :'NAME'), 3) as 流局時聴牌率 from ryukyokus inner join players on ryukyokus.player_id = players.id where players.name = :'NAME' and ryukyokus.tenpai;
+select seat as 起家, count(seat) as 回数 from players where name = 'Player' group by seat order by seat;
