@@ -100,7 +100,14 @@ class Analyzer
 
   def execute()
     File.open(@file_name) do |file|
-      file.each_line do |line|
+      lines = file.readlines
+      message = JSON.parse(lines.last)
+
+      if message['type'] != 'end_game'
+        return
+      end
+
+      lines.each do |line|
         message = JSON.parse(line)
     
         begin
