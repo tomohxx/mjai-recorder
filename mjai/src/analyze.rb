@@ -18,14 +18,24 @@ class Analyzer
     @game_id = result[0]["lastval"]
   end
 
+  def insert_name(name)
+    result = @connection.exec("SELECT * FROM player_names WHERE player_name = '#{name}'")
+
+    if result.ntuples == 0
+      @connection.exec("INSERT INTO player_names VALUES (default,'#{name}')")
+    end
+  end
+
   def insert_player(seat, name)
-    @connection.exec("INSERT INTO PLAYERS VALUES (default,#{seat},#{@game_id},'#{name}')")
+    result = @connection.exec("SELECT * FROM player_names WHERE player_name = '#{name}'")
+    player_name_id = result[0]["id"]
+    @connection.exec("INSERT INTO players VALUES (default,#{seat},#{@game_id},'#{player_name_id}')")
     result = @connection.exec("SELECT LASTVAL()")
     @player_id[seat] = result[0]["lastval"]
   end
 
   def insert_round()
-    @connection.exec("INSERT INTO ROUNDS VALUES (default,#{@game_id})")
+    @connection.exec("INSERT INTO rounds VALUES (default,#{@game_id})")
     result = @connection.exec("SELECT LASTVAL()")
     @round_id = result[0]["lastval"]
   end
@@ -47,13 +57,14 @@ class Analyzer
   end
 
   def insert_result(seat, score, position)
-    @connection.exec("INSERT INTO results VALUES (#{@player_id[seat]},#{@game_id},#{score},#{position})")
+    @connection.exec("INSERT INTO results VALUES (default,#{@player_id[seat]},#{score},#{position})")
   end
 
   def start_game(message)
     insert_game()
 
     message["names"].each_with_index do |name, index|
+      insert_name(name)
       insert_player(index, name)
     end
   end
