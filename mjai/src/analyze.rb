@@ -18,24 +18,22 @@ class Analyzer
     @game_id = result[0]["lastval"]
   end
 
-  def insert_name(name)
-    result = @connection.exec("SELECT * FROM player_names WHERE player_name = '#{name}'")
-
-    if result.ntuples == 0
-      @connection.exec("INSERT INTO player_names VALUES (default,'#{name}')")
-    end
+  def update_game()
+    @connection.exec("UPDATE games SET error_flag = TRUE WHERE id = #{@game_id}")
   end
 
   def insert_player(seat, name)
-    result = @connection.exec("SELECT * FROM player_names WHERE player_name = '#{name}'")
-    player_name_id = result[0]["id"]
-    @connection.exec("INSERT INTO players VALUES (default,#{seat},#{@game_id},'#{player_name_id}')")
+    @connection.exec("INSERT INTO players(seat,game_id,player_name) VALUES (#{seat},#{@game_id},'#{name}')")
     result = @connection.exec("SELECT LASTVAL()")
     @player_id[seat] = result[0]["lastval"]
   end
 
-  def insert_round()
-    @connection.exec("INSERT INTO rounds VALUES (default,#{@game_id})")
+  def update_player(seat, score, position)
+    @connection.exec("UPDATE players SET score = #{score}, position = #{position} WHERE id = #{@player_id[seat]}")
+  end
+
+  def insert_round(bakaze, kyoku, honba)
+    @connection.exec("INSERT INTO rounds VALUES (default,#{@game_id},'#{bakaze}',#{kyoku},#{honba})")
     result = @connection.exec("SELECT LASTVAL()")
     @round_id = result[0]["lastval"]
   end
@@ -56,21 +54,16 @@ class Analyzer
     @connection.exec("INSERT INTO ryukyokus VALUES (default,#{@player_id[actor]},#{tenpai},#{@round_id})")
   end
 
-  def insert_result(seat, score, position)
-    @connection.exec("INSERT INTO results VALUES (default,#{@player_id[seat]},#{score},#{position})")
-  end
-
   def start_game(message)
     insert_game()
 
     message["names"].each_with_index do |name, index|
-      insert_name(name)
       insert_player(index, name)
     end
   end
 
   def start_kyoku(message)
-    insert_round()
+    insert_round(message["bakaze"], message["kyoku"], message["honba"])
   end
 
   def reach(message)
@@ -102,29 +95,28 @@ class Analyzer
   def end_game(message)
     scores = message["scores"]
     i = 0
-    positions = [*0..3].sort_by{|v| [-scores[v], i+=1]}
+    seats = [*0..3].sort_by{|v| [-scores[v], i+=1]}
 
     4.times do |i|
-      insert_result(positions[i], scores[positions[i]], i+1)
+      update_player(seats[i], scores[seats[i]], i+1)
     end
   end
 
   def execute()
     File.open(@file_name) do |file|
       lines = file.readlines
-      message = JSON.parse(lines.last)
 
-      if message['type'] != 'end_game'
-        return
-      end
-
-      lines.each do |line|
+      for line in lines
         message = JSON.parse(line)
     
         begin
           self.send("#{message['type']}", message)
         rescue NoMethodError
         end
+      end
+
+      if message['type'] != 'end_game'
+        update_game()
       end
     end
   end
