@@ -22,7 +22,7 @@ FROM players
 INNER JOIN games
 ON players.game_id = games.id
   AND NOT games.error_flag
-where players.player_name = :'NAME';
+WHERE players.player_name = :'NAME';
 
 SELECT
 COUNT(*) AS 局数,
