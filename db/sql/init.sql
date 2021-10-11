@@ -54,8 +54,9 @@ CREATE TABLE riichi(
 CREATE TABLE naki(
   id SERIAL NOT NULL PRIMARY KEY,
   actor_id INTEGER NOT NULL,
-  target_id INTEGER,
+  target_id INTEGER NOT NULL,
   kyoku_id INTEGER NOT NULL,
+  naki_type CHAR(10) NOT NULL CHECK(naki_type IN ('pon', 'chi', 'daiminkan')),
   FOREIGN KEY(actor_id) REFERENCES player(id) ON DELETE CASCADE,
   FOREIGN KEY(target_id) REFERENCES player(id) ON DELETE CASCADE,
   FOREIGN KEY(kyoku_id) REFERENCES kyoku(id) ON DELETE CASCADE

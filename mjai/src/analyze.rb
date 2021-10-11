@@ -32,7 +32,7 @@ class Analyzer
     @connection.exec("UPDATE player SET score = #{score}, position = #{position} WHERE id = #{@player_id[seat]}")
   end
 
-  def insert_round(bakaze, kyoku, honba)
+  def insert_kyoku(bakaze, kyoku, honba)
     @connection.exec("INSERT INTO kyoku(game_id,bakaze,kyoku,honba) VALUES (#{@game_id},'#{bakaze}',#{kyoku},#{honba})")
     result = @connection.exec("SELECT LASTVAL()")
     @kyoku_id = result[0]["lastval"]
@@ -42,8 +42,8 @@ class Analyzer
     @connection.exec("INSERT INTO riichi(player_id,kyoku_id) VALUES (#{@player_id[actor]},#{@kyoku_id})")
   end
 
-  def insert_naki(actor, target)
-    @connection.exec("INSERT INTO naki(actor_id,target_id,kyoku_id) VALUES (#{@player_id[actor]},#{@player_id[target]},#{@kyoku_id})")
+  def insert_naki(actor, target, naki_type)
+    @connection.exec("INSERT INTO naki(actor_id,target_id,kyoku_id,naki_type) VALUES (#{@player_id[actor]},#{@player_id[target]},#{@kyoku_id},'#{naki_type}')")
   end
 
   def insert_winning(actor, target, delta)
@@ -63,7 +63,7 @@ class Analyzer
   end
 
   def start_kyoku(message)
-    insert_round(message["bakaze"], message["kyoku"], message["honba"])
+    insert_kyoku(message["bakaze"], message["kyoku"], message["honba"])
   end
 
   def reach(message)
@@ -71,19 +71,19 @@ class Analyzer
   end
 
   def pon(message)
-    insert_naki(message["actor"], message["target"])
+    insert_naki(message["actor"], message["target"], "pon")
   end
 
   def chi(message)
-    insert_naki(message["actor"], message["target"])
+    insert_naki(message["actor"], message["target"], "chi")
   end
 
   def daiminkan(message)
-    insert_naki(message["actor"], message["target"])
+    insert_naki(message["actor"], message["target"], "daiminkan")
   end
 
   def hora(message)
-    insert_winning(message["actor"], message["target"], message['deltas'][message['actor']])
+    insert_winning(message["actor"], message["target"], message["deltas"][message["actor"]])
   end
 
   def ryukyoku(message)
@@ -115,14 +115,14 @@ class Analyzer
         end
       end
 
-      if message['type'] != 'end_game'
+      if message["type"] != "end_game"
         update_game()
       end
     end
   end
 end
 
-connection = PG::connect(host: 'db', user: 'user', password: 'password', dbname: 'mjai_db')
+connection = PG::connect(host: "db", user: "user", password: "password", dbname: "mjai_db")
 file_name = Dir.glob("/log_dir/*.mjson").max_by{|f| File.mtime(f)}
 analyzer = Analyzer.new(connection, file_name)
 analyzer.execute()
