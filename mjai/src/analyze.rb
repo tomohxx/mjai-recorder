@@ -7,51 +7,51 @@ class Analyzer
     @connection = connection
     @file_name = file_name
     @game_id = nil
-    @round_id = nil
+    @kyoku_id = nil
     @player_id = Array.new(4)
   end
 
   def insert_game()
     file_name = File.basename(@file_name, ".mjson")
-    @connection.exec("INSERT INTO games VALUES (default,'#{file_name}')")
+    @connection.exec("INSERT INTO game(file_name) VALUES ('#{file_name}')")
     result = @connection.exec("SELECT LASTVAL()")
     @game_id = result[0]["lastval"]
   end
 
   def update_game()
-    @connection.exec("UPDATE games SET error_flag = TRUE WHERE id = #{@game_id}")
+    @connection.exec("UPDATE game SET error_flag = TRUE WHERE id = #{@game_id}")
   end
 
   def insert_player(seat, name)
-    @connection.exec("INSERT INTO players(seat,game_id,player_name) VALUES (#{seat},#{@game_id},'#{name}')")
+    @connection.exec("INSERT INTO player(seat,game_id,player_name) VALUES (#{seat},#{@game_id},'#{name}')")
     result = @connection.exec("SELECT LASTVAL()")
     @player_id[seat] = result[0]["lastval"]
   end
 
   def update_player(seat, score, position)
-    @connection.exec("UPDATE players SET score = #{score}, position = #{position} WHERE id = #{@player_id[seat]}")
+    @connection.exec("UPDATE player SET score = #{score}, position = #{position} WHERE id = #{@player_id[seat]}")
   end
 
   def insert_round(bakaze, kyoku, honba)
-    @connection.exec("INSERT INTO rounds VALUES (default,#{@game_id},'#{bakaze}',#{kyoku},#{honba})")
+    @connection.exec("INSERT INTO kyoku(game_id,bakaze,kyoku,honba) VALUES (#{@game_id},'#{bakaze}',#{kyoku},#{honba})")
     result = @connection.exec("SELECT LASTVAL()")
-    @round_id = result[0]["lastval"]
+    @kyoku_id = result[0]["lastval"]
   end
 
   def insert_riichi(actor)
-    @connection.exec("INSERT INTO riichis VALUES (default,#{@player_id[actor]},#{@round_id})")
+    @connection.exec("INSERT INTO riichi(player_id,kyoku_id) VALUES (#{@player_id[actor]},#{@kyoku_id})")
   end
 
   def insert_naki(actor, target)
-    @connection.exec("INSERT INTO nakis VALUES (default,#{@player_id[actor]},#{@player_id[target]},#{@round_id})")
+    @connection.exec("INSERT INTO naki(actor_id,target_id,kyoku_id) VALUES (#{@player_id[actor]},#{@player_id[target]},#{@kyoku_id})")
   end
 
   def insert_winning(actor, target, delta)
-    @connection.exec("INSERT INTO winnings VALUES (default,#{@player_id[actor]},#{@player_id[target]},#{delta},#{@round_id})")
+    @connection.exec("INSERT INTO hora(actor_id,target_id,delta,kyoku_id) VALUES (#{@player_id[actor]},#{@player_id[target]},#{delta},#{@kyoku_id})")
   end
 
   def insert_ryukyoku(actor, tenpai)
-    @connection.exec("INSERT INTO ryukyokus VALUES (default,#{@player_id[actor]},#{tenpai},#{@round_id})")
+    @connection.exec("INSERT INTO ryukyoku(player_id,tenpai,kyoku_id) VALUES (#{@player_id[actor]},#{tenpai},#{@kyoku_id})")
   end
 
   def start_game(message)
