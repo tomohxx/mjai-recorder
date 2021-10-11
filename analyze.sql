@@ -6,58 +6,58 @@
 \pset footer
 \echo
 
-select
-count(*) as 試合数,
-round(avg(players.position), 3) as 平均順位,
-round(avg(players.score), 0) as 平均最終持ち点,
-round(count(case when players.position = 1 then 1 else null end)::numeric / nullif(count(*), 0), 3) as 一位率,
-round(count(case when players.position = 2 then 1 else null end)::numeric / nullif(count(*), 0), 3) as 二位率,
-round(count(case when players.position = 3 then 1 else null end)::numeric / nullif(count(*), 0), 3) as 三位率,
-round(count(case when players.position = 4 then 1 else null end)::numeric / nullif(count(*), 0), 3) as 四位率,
-round(count(case when players.seat = 0 then 1 else null end)::numeric / nullif(count(*), 0), 3) as 東家率,
-round(count(case when players.seat = 1 then 1 else null end)::numeric / nullif(count(*), 0), 3) as 南家率,
-round(count(case when players.seat = 2 then 1 else null end)::numeric / nullif(count(*), 0), 3) as 西家率,
-round(count(case when players.seat = 3 then 1 else null end)::numeric / nullif(count(*), 0), 3) as 北家率
-from players
-inner join games
-on players.game_id = games.id
-  and not games.error_flag
+SELECT
+COUNT(*) AS 試合数,
+ROUND(AVG(players.position), 3) AS 平均順位,
+ROUND(AVG(players.score), 0) AS 平均最終持ち点,
+ROUND(COUNT(CASE WHEN players.position = 1 THEN 1 ELSE NULL END)::NUMERIC / NULLIF(COUNT(*), 0), 3) AS 一位率,
+ROUND(COUNT(CASE WHEN players.position = 2 THEN 1 ELSE NULL END)::NUMERIC / NULLIF(COUNT(*), 0), 3) AS 二位率,
+ROUND(COUNT(CASE WHEN players.position = 3 THEN 1 ELSE NULL END)::NUMERIC / NULLIF(COUNT(*), 0), 3) AS 三位率,
+ROUND(COUNT(CASE WHEN players.position = 4 THEN 1 ELSE NULL END)::NUMERIC / NULLIF(COUNT(*), 0), 3) AS 四位率,
+ROUND(COUNT(CASE WHEN players.seat = 0 THEN 1 ELSE NULL END)::NUMERIC / NULLIF(COUNT(*), 0), 3) AS 東家率,
+ROUND(COUNT(CASE WHEN players.seat = 1 THEN 1 ELSE NULL END)::NUMERIC / NULLIF(COUNT(*), 0), 3) AS 南家率,
+ROUND(COUNT(CASE WHEN players.seat = 2 THEN 1 ELSE NULL END)::NUMERIC / NULLIF(COUNT(*), 0), 3) AS 西家率,
+ROUND(COUNT(CASE WHEN players.seat = 3 THEN 1 ELSE NULL END)::NUMERIC / NULLIF(COUNT(*), 0), 3) AS 北家率
+FROM players
+INNER JOIN games
+ON players.game_id = games.id
+  AND NOT games.error_flag
 where players.player_name = :'NAME';
 
-select
-count(*) as 局数,
-round(count(actors.id)::numeric / nullif(count(*), 0), 3) as 和了率,
-round(count(case when actors.actor_id = actors.target_id then 1 else null end)::numeric / nullif(count(actors.id), 0), 3) as 自摸率,
-round(count(case when targets.actor_id <> targets.target_id then 1 else null end)::numeric / nullif(count(*), 0), 3) as 放銃率,
-round(avg(actors.delta), 0) as 平均得点,
-round(avg(case when targets.actor_id <> targets.target_id then targets.delta else null end), 0) as 平均失点,
-round(count(riichis.id)::numeric / nullif(count(*), 0), 3) as 立直率,
-round(count(nakis_.actor_id)::numeric / nullif(count(*), 0), 3) as 副露率,
-round(count(ryukyokus.id)::numeric / nullif(count(*), 0), 3) as 流局率,
-round(count(case when ryukyokus.tenpai then 1 else null end)::numeric / nullif(count(ryukyokus.id), 0), 3) as 流局時聴牌率
-from rounds
-inner join players
-on rounds.game_id = players.game_id
-  and players.player_name = :'NAME'
-inner join games
-on rounds.game_id = games.id
-  and not games.error_flag
-left outer join winnings as actors
-on rounds.id = actors.round_id
-  and players.id = actors.actor_id
-left outer join winnings as targets
-on rounds.id = targets.round_id
-  and players.id = targets.target_id
-left outer join riichis
-on rounds.id = riichis.round_id
-  and players.id = riichis.player_id
-left outer join (
-  select distinct
+SELECT
+COUNT(*) AS 局数,
+ROUND(COUNT(actors.id)::NUMERIC / NULLIF(COUNT(*), 0), 3) AS 和了率,
+ROUND(COUNT(CASE WHEN actors.actor_id = actors.target_id THEN 1 ELSE NULL END)::NUMERIC / NULLIF(COUNT(actors.id), 0), 3) AS 自摸率,
+ROUND(COUNT(CASE WHEN targets.actor_id <> targets.target_id THEN 1 ELSE NULL END)::NUMERIC / NULLIF(COUNT(*), 0), 3) AS 放銃率,
+ROUND(AVG(actors.delta), 0) AS 平均得点,
+ROUND(AVG(CASE WHEN targets.actor_id <> targets.target_id THEN targets.delta ELSE NULL END), 0) AS 平均失点,
+ROUND(COUNT(riichis.id)::NUMERIC / NULLIF(COUNT(*), 0), 3) AS 立直率,
+ROUND(COUNT(nakis_.actor_id)::NUMERIC / NULLIF(COUNT(*), 0), 3) AS 副露率,
+ROUND(COUNT(ryukyokus.id)::NUMERIC / NULLIF(COUNT(*), 0), 3) AS 流局率,
+ROUND(COUNT(CASE WHEN ryukyokus.tenpai THEN 1 ELSE NULL END)::NUMERIC / NULLIF(COUNT(ryukyokus.id), 0), 3) AS 流局時聴牌率
+FROM rounds
+INNER JOIN players
+ON rounds.game_id = players.game_id
+  AND players.player_name = :'NAME'
+INNER JOIN games
+ON rounds.game_id = games.id
+  AND NOT games.error_flag
+LEFT OUTER JOIN winnings AS actors
+ON rounds.id = actors.round_id
+  AND players.id = actors.actor_id
+LEFT OUTER JOIN winnings AS targets
+ON rounds.id = targets.round_id
+  AND players.id = targets.target_id
+LEFT OUTER JOIN riichis
+ON rounds.id = riichis.round_id
+  AND players.id = riichis.player_id
+LEFT OUTER JOIN (
+  SELECT DISTINCT
   actor_id, round_id
-  from nakis
-) as nakis_
-on rounds.id = nakis_.round_id
-  and players.id = nakis_.actor_id
-left outer join ryukyokus
-on rounds.id = ryukyokus.round_id
-  and players.id = ryukyokus.player_id;
+  FROM nakis
+) AS nakis_
+ON rounds.id = nakis_.round_id
+  AND players.id = nakis_.actor_id
+LEFT OUTER JOIN ryukyokus
+ON rounds.id = ryukyokus.round_id
+  AND players.id = ryukyokus.player_id;
