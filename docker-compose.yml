@@ -11,7 +11,7 @@ services:
     volumes:
       - ./db/sql:/docker-entrypoint-initdb.d
       - ./db/data:/var/lib/postgresql/data
-  mjai:
+  app:
     build:
       context: ./mjai
     ports:
@@ -20,12 +20,22 @@ services:
       - db
     volumes:
       - ./storage:/log_dir
-  log:
+  web:
     image: nginx
     ports:
       - 8000:80
     volumes:
       - ./storage:/usr/share/nginx/html:ro
       - ./log/conf.d:/etc/nginx/conf.d
+    depends_on:
+      - db
+  api:
+    image: postgrest/postgrest
+    ports:
+      - 3000:3000
+    environment:
+      - PGRST_DB_URI=postgres://user:password@db:5432/mjai_db
+      - PGRST_DB_SCHEMA=public
+      - PGRST_DB_ANON_ROLE=user
     depends_on:
       - db

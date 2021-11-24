@@ -13,16 +13,3 @@ Mjaiイベントログ管理ツール
 ```shell
 $ docker run -v "$PWD/output:/output" -v "$PWD/schemaspy.properties:/schemaspy.properties" --net=host --rm schemaspy/schemaspy
 ```
-
-## 解析
-
-*Player*の成績
-```
-$ ./analyze.sh Player
-```
-
-## SQLコマンド実行
-
-```
-$ docker exec -it mjai-recoder_db_1 psql mjai_db -U user
-```
