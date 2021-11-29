@@ -21,12 +21,12 @@ services:
     volumes:
       - ./storage:/log_dir
   web:
-    image: nginx
+    build:
+      context: ./web
     ports:
       - 8000:80
     volumes:
-      - ./storage:/usr/share/nginx/html:ro
-      - ./log/conf.d:/etc/nginx/conf.d
+      - ./storage:/storage:ro
     depends_on:
       - db
   api:
