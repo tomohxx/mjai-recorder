@@ -65,7 +65,8 @@ CREATE TABLE naki(
 CREATE VIEW player_list AS
 SELECT
 DISTINCT player_name
-FROM player;
+FROM player
+ORDER BY player_name;
 
 CREATE OR REPLACE FUNCTION stat_game(arg VARCHAR)
 RETURNS TABLE(
