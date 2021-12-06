@@ -31,8 +31,6 @@ services:
       - db
   api:
     image: postgrest/postgrest
-    ports:
-      - 3000:3000
     environment:
       - PGRST_DB_URI=postgres://user:password@db:5432/mjai_db
       - PGRST_DB_SCHEMA=public
