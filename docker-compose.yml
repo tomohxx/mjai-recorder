@@ -9,8 +9,8 @@ services:
       - POSTGRES_PASSWORD=password
       - POSTGRES_DB=mjai_db
     volumes:
-      - ./db/sql:/docker-entrypoint-initdb.d
-      - ./db/data:/var/lib/postgresql/data
+      - ./db/sql:/docker-entrypoint-initdb.d:ro
+      - db_data:/var/lib/postgresql/data
   app:
     build:
       context: ./app
@@ -19,14 +19,16 @@ services:
     depends_on:
       - db
     volumes:
-      - ./storage:/log_dir
+      - /etc/localtime:/etc/localtime:ro
+      - app_data:/log_dir
   web:
     build:
       context: ./web
     ports:
       - 8000:80
     volumes:
-      - ./storage:/storage:ro
+      - /etc/localtime:/etc/localtime:ro
+      - app_data:/storage:ro
     depends_on:
       - db
   api:
@@ -37,3 +39,7 @@ services:
       - PGRST_DB_ANON_ROLE=user
     depends_on:
       - db
+
+volumes:
+  db_data:
+  app_data:
