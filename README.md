@@ -1,4 +1,4 @@
-# Mjai Recoder
+# Mjai Recorder
 Mjai Event Log Management Tool.
 
 ## Features
