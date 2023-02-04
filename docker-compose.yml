@@ -2,8 +2,8 @@ version: '3.7'
 services:
   db:
     image: postgres
-    ports:
-      - 5432:5432
+    # ports:
+    #   - 5432:5432
     environment:
       - POSTGRES_USER=user
       - POSTGRES_PASSWORD=password
@@ -14,23 +14,27 @@ services:
   app:
     build:
       context: ./app
-    ports:
-      - 11600:11600
     depends_on:
       - db
     volumes:
       - /etc/localtime:/etc/localtime:ro
       - app_data:/log_dir
-  # web:
-  #   build:
-  #     context: ./web
-  #   ports:
-  #     - 8000:80
-  #   volumes:
-  #     - /etc/localtime:/etc/localtime:ro
-  #     - app_data:/storage:ro
-  #   depends_on:
-  #     - db
+  api:
+    build:
+      context: ./api
+    depends_on:
+      - db
+  web:
+    build:
+      context: ./web
+    ports:
+      - 8000:80
+      - 11600:11600
+    volumes:
+      - /etc/localtime:/etc/localtime:ro
+      - app_data:/storage:ro
+    depends_on:
+      - db
 
 volumes:
   db_data:

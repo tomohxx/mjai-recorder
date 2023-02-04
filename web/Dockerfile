@@ -1,11 +1,2 @@
-FROM node:lts-alpine as build-stage
-WORKDIR /app
-COPY vue/package*.json ./
-RUN npm install
-COPY ./vue/ .
-RUN npm run build
-
-FROM nginx:stable-alpine as production-stage
-RUN mkdir /app
-COPY --from=build-stage /app/dist /app
+FROM nginx:stable-alpine
 COPY nginx.conf /etc/nginx/nginx.conf
