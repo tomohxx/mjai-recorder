@@ -21,24 +21,16 @@ services:
     volumes:
       - /etc/localtime:/etc/localtime:ro
       - app_data:/log_dir
-  web:
-    build:
-      context: ./web
-    ports:
-      - 8000:80
-    volumes:
-      - /etc/localtime:/etc/localtime:ro
-      - app_data:/storage:ro
-    depends_on:
-      - db
-  api:
-    image: postgrest/postgrest
-    environment:
-      - PGRST_DB_URI=postgres://user:password@db:5432/mjai_db
-      - PGRST_DB_SCHEMA=public
-      - PGRST_DB_ANON_ROLE=user
-    depends_on:
-      - db
+  # web:
+  #   build:
+  #     context: ./web
+  #   ports:
+  #     - 8000:80
+  #   volumes:
+  #     - /etc/localtime:/etc/localtime:ro
+  #     - app_data:/storage:ro
+  #   depends_on:
+  #     - db
 
 volumes:
   db_data:

@@ -14,7 +14,7 @@ class Analyzer
   def insert_game()
     file_name = File.basename(@file_name, ".mjson")
     @connection.exec("INSERT INTO game(file_name) VALUES ('#{file_name}')")
-    result = @connection.exec("SELECT LASTVAL()")
+    result = @connection.exec("SELECT LASTVAL() FROM game")
     @game_id = result[0]["lastval"]
   end
 
@@ -23,13 +23,14 @@ class Analyzer
   end
 
   def insert_player(seat, name)
-    @connection.exec("INSERT INTO player(seat,game_id,player_name) VALUES (#{seat},#{@game_id},'#{name}')")
-    result = @connection.exec("SELECT LASTVAL()")
-    @player_id[seat] = result[0]["lastval"]
+    @connection.exec("INSERT INTO player(player_name) SELECT '#{name}' WHERE NOT EXISTS (SELECT player_name FROM player WHERE player_name = '#{name}')")
+    result = @connection.exec("SELECT id FROM player WHERE player_name = '#{name}'")
+    @player_id[seat] = result[0]["id"]
+    @connection.exec("INSERT INTO game_player(game_id,player_id,seat) VALUES (#{@game_id},#{@player_id[seat]},#{seat})")
   end
 
   def update_player(seat, score, position)
-    @connection.exec("UPDATE player SET score = #{score}, position = #{position} WHERE id = #{@player_id[seat]}")
+    @connection.exec("UPDATE game_player SET score = #{score}, position = #{position} WHERE game_id = #{@game_id} AND player_id = #{@player_id[seat]}")
   end
 
   def insert_kyoku(bakaze, kyoku, honba)
