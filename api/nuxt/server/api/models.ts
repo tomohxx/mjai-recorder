@@ -24,6 +24,14 @@ export class GamePlayer extends Model {
   declare position: number;
 }
 
+export class Kyoku extends Model {
+  declare id: number;
+  declare gameId: number;
+  declare bakaze: string;
+  declare kyoku: number;
+  declare honba: string;
+}
+
 Game.init(
   {
     id: {
@@ -111,8 +119,49 @@ GamePlayer.init(
   }
 );
 
-Game.hasMany(GamePlayer);
-GamePlayer.belongsTo(Game);
+Kyoku.init(
+  {
+    id: {
+      type: DataTypes.INTEGER,
+      primaryKey: true,
+    },
+    gameId: {
+      type: DataTypes.INTEGER,
+      references: {
+        model: Game,
+        key: "id",
+      },
+      allowNull: false,
+      field: "game_id",
+    },
+    bakaze: {
+      type: DataTypes.CHAR(1),
+      allowNull: false,
+    },
+    kyoku: {
+      type: DataTypes.INTEGER,
+      allowNull: false,
+    },
+    honba: {
+      type: DataTypes.INTEGER,
+      allowNull: false,
+    },
+  },
+  {
+    sequelize,
+    tableName: "kyoku",
+    timestamps: false,
+  }
+);
 
-Player.hasMany(GamePlayer);
-GamePlayer.belongsTo(Player);
+Game.hasMany(GamePlayer, { foreignKey: "gameId" });
+GamePlayer.belongsTo(Game, { foreignKey: "gameId" });
+
+Player.hasMany(GamePlayer, { foreignKey: "playerId" });
+GamePlayer.belongsTo(Player, { foreignKey: "playerId" });
+
+Game.hasMany(Kyoku, { foreignKey: "gameId" });
+Kyoku.belongsTo(Game, { foreignKey: "gameId" });
+
+Player.belongsToMany(Game, { through: GamePlayer, foreignKey: "playerId" });
+Game.belongsToMany(Player, { through: GamePlayer, foreignKey: "gameId" });

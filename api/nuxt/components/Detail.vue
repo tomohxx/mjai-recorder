@@ -21,13 +21,20 @@
 interface Props {
   stats: {
     numGame: number,
+    numKyoku: number,
   }
 }
 
 const { stats } = defineProps<Props>();
 
-const items = ref([{
-  name: "試合数",
-  value: stats.numGame,
-}]);
+const items = ref([
+  {
+    name: "試合数",
+    value: stats.numGame,
+  },
+  {
+    name: "局数",
+    value: stats.numKyoku,
+  }
+]);
 </script>
