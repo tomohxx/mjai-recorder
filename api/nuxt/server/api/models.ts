@@ -17,8 +17,8 @@ export class Player extends Model {
 
 export class GamePlayer extends Model {
   declare id: number;
-  declare game_id: number;
-  declare player_id: number;
+  declare gameId: number;
+  declare playerId: number;
   declare seat: number;
   declare score: number;
   declare position: number;
@@ -91,7 +91,7 @@ GamePlayer.init(
         key: "id",
       },
       allowNull: false,
-      field: "player_name",
+      field: "player_id",
     },
     seat: {
       type: DataTypes.INTEGER,
@@ -111,7 +111,8 @@ GamePlayer.init(
   }
 );
 
-Game.hasMany(GamePlayer, { foreignKey: "game_id" });
-GamePlayer.belongsTo(Game, { foreignKey: "game_id" });
-Player.hasMany(GamePlayer, { foreignKey: "player_id" });
-GamePlayer.belongsTo(Player, { foreignKey: "player_id" });
+Game.hasMany(GamePlayer);
+GamePlayer.belongsTo(Game);
+
+Player.hasMany(GamePlayer);
+GamePlayer.belongsTo(Player);

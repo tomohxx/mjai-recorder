@@ -1,11 +1,9 @@
 import { Player } from "./models";
 
 export default defineEventHandler(async (event) => {
-  const players = (
-    await Player.findAll({
-      attributes: ["playerName"],
-    })
-  ).map((player) => player.playerName);
+  const players = await Player.findAll({
+    attributes: ["id", "playerName"],
+  });
 
   return players;
 });
