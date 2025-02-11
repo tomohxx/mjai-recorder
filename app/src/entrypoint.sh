@@ -8,8 +8,8 @@ do
     --room=default \
     --games=1 \
     --log_dir="/log_dir" \
-    "mjai-manue --name=Manue1_1" \
-    "mjai-manue --name=Manue1_2" \
-    "mjai-manue --name=Manue1_3"
+    "./run_manue.sh" \
+    "./run_manue.sh" \
+    "./run_manue.sh"
   ./analyze.rb
 done
