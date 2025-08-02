@@ -4,7 +4,7 @@ do
   mjai server \
     --host=0.0.0.0 \
     --port=11600 \
-    --game_type=one_kyoku \
+    --game_type=$GAME_TYPE \
     --room=default \
     --games=1 \
     --log_dir="/log_dir" \

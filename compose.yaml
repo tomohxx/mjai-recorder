@@ -12,6 +12,8 @@ services:
       - ./db/sql:/docker-entrypoint-initdb.d:ro
       - db_data:/var/lib/postgresql/data
   app:
+    environment:
+      - GAME_TYPE=tonnan
     build:
       context: ./app
     depends_on:
